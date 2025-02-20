@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz App: Admin</title>
+    <style>
+      /* .container {
+      } */
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="title">Quiz Admin</h1>
+      <div>
+        <div>
+          <input id="questionInput" placeholder="question to ask" />
+          <!-- <button type="submit">+</button> -->
+        </div>
+        <ol class="answer-options" type="a">
+          <li>
+            <input />
+            <button>+</button>
+          </li>
+        </ol>
+        <div>
+          <select id="correctAnswerDropdown">
+            <option value="">select correct answer</option>
+          </select>
+        </div>
+        <button type="submit">submit question</button>
+      </div>
+      <code id="displayQuestions"></code>
+    </div>
+
+    <script>
+      // global variables
+      const submitButton = document.querySelector("button[type=submit]");
+      const answerOptions = document.querySelector(".answer-options");
+      const ANSWER_KEYS = "abcdefghijklmnopqrstuvwxyz";
+
+      let quizQuestions = [];
+
+      window.onload = renderQuestions();
+
+      // element generators ---------------------------------
+      function createAnswerOptionInputWithButton() {
+        const li = document.createElement("li");
+        const input = document.createElement("input");
+        li.appendChild(input);
+        const button = document.createElement("button");
+        button.textContent = "+";
+        li.appendChild(button);
+        return li;
+      }
+
+      function createDropdownAnswerOption(answerKey, answerText) {
+        const option = document.createElement("option");
+        option.value = answerKey;
+        option.textContent = answerText;
+        return option;
+      }
+
+      function renderQuestions() {
+        quizQuestions = JSON.parse(localStorage.getItem("QUIZ_APP_questions"));
+        displayQuestions.innerHTML = JSON.stringify(
+          quizQuestions || [],
+          null,
+          2
+        );
+      }
+
+      function resetValues() {
+        questionInput.value = "";
+        // TODO: i think repalce or jsut append
+        document.querySelector(".answer-options").innerHTML = "";
+        document
+          .querySelector(".answer-options")
+          .appendChild(createAnswerOptionInputWithButton());
+
+        correctAnswerDropdown.innerHTML =
+          "<option value=''>select correct answer</option>";
+      }
+
+      //  -------------------------------------------------------
+
+      // add question handler ----------------------------------
+      submitButton.addEventListener("click", function (e) {
+        e.preventDefault();
+        const question = questionInput.value;
+        const answerOptions =
+          document.querySelector(".answer-options").children;
+
+        let answerOptionsArr = [];
+
+        for (let i = 0; i < answerOptions.length - 1; i++) {
+          answerOptionsArr.push({
+            key: ANSWER_KEYS[i],
+            option: answerOptions[i].textContent,
+          });
+        }
+
+        const questionObj = {
+          question: question,
+          answerOptions: answerOptionsArr,
+          answer: correctAnswerDropdown.value,
+        };
+
+        quizQuestions.push(questionObj);
+
+        localStorage.setItem(
+          "QUIZ_APP_questions",
+          JSON.stringify(quizQuestions)
+        );
+
+        // clear valeus
+        resetValues();
+
+        renderQuestions();
+      });
+
+      //  -------------------------------------------------------
+
+      // add answer option handler --------------------------------
+
+      let addAnswerButton = document.querySelector(
+        ".answer-options li > button"
+      );
+      addAnswerButton.addEventListener("click", handleAddAnswerOption);
+
+      function handleAddAnswerOption() {
+        // creatte list item
+        const li = document.createElement("li");
+        li.textContent = document.querySelector(
+          ".answer-options li > input"
+        ).value; // value from input
+
+        answerOptions.replaceChild(li, answerOptions.lastElementChild);
+        correctAnswerDropdown.innerHTML =
+          "<option value=''>select correct answer</option>";
+        for (let i = 0; i < answerOptions.children.length; i++) {
+          const answerOption = answerOptions.children[i].textContent;
+          correctAnswerDropdown.appendChild(
+            createDropdownAnswerOption(ANSWER_KEYS[i], answerOption)
+          );
+        }
+
+        answerOptions.appendChild(createAnswerOptionInputWithButton());
+        addAnswerButton = document.querySelector(".answer-options button");
+        addAnswerButton.addEventListener("click", handleAddAnswerOption);
+      }
+
+      //  -------------------------------------------------------
+    </script>
+  </body>
+</html>
