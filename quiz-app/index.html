@@ -7,18 +7,37 @@
   </head>
   <body>
     <div class="container">
-      <script>
-        const storedQuestions =
-          JSON.parse(localStorage.getItem("QUIZ_APP_questions")) || [];
+      <div><h3>questionContent1</h3></div>
+      <div><h3>questionContent2</h3></div>
+      <div><h3>questionContent4</h3></div>
+      <div><h3>questionContent5</h3></div>
 
-        // questions.innerHTML = storedQuestions;
-
-        for (let i = 0; i < storedQuestions.length; i++) {
-          const p = document.createElement("p");
-          p.textContent = JSON.stringify(storedQuestions[i]);
-          document.querySelector(".container").appendChild(p);
-        }
-      </script>
+      <!-- <div><h3>questionContent3</h3></div> -->
     </div>
+    <script>
+      const storedQuestions =
+        JSON.parse(localStorage.getItem("QUIZ_APP_questions")) || [];
+
+      // questions.innerHTML = storedQuestions;
+
+      console.log("storedQuestions ", storedQuestions);
+
+      for (let i = 0; i < storedQuestions.length; i++) {
+        const current = storedQuestions[i];
+
+        const question = current.question;
+        const answerOptions = current.answerOptions;
+        const answer = current.answer;
+        // when create element -> it's ready to get enriched
+        const div = document.createElement("div"); // <div></div>
+        const h3 = document.createElement("h3"); // <h3></h3>
+        h3.textContent = question; // <h3>questioncontent</h3>
+        div.appendChild(h3); // <div><h3>questionContent</h3></div>
+
+        // const p = document.createElement("p");
+        // p.textContent = JSON.stringify(storedQuestions[i]);
+        document.querySelector(".container").appendChild(div); // <div class=container><div><h3>questionContent</h3></div></div>
+      }
+    </script>
   </body>
 </html>
